@@ -54,4 +54,17 @@ class Admin extends BaseController
 
         return view('admin/results', ['results' => $results]);
     }
+    public function generateKode()
+{
+    helper('text');
+    $model = new \App\Models\UserModel();
+    $kode = random_string('alnum', 8);
+    $model->insert([
+        'username' => 'user_' . $kode,
+        'unique_code' => $kode,
+        'role' => 'user'
+    ]);
+    return "User baru dibuat dengan kode: $kode";
+}
+
 }

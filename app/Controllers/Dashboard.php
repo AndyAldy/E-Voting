@@ -8,6 +8,11 @@ class Dashboard extends BaseController
 {
     public function index()
     {
+        // Pastikan user sudah login via kode unik
+        if (!$this->session->has('user_id')) {
+            return redirect()->to('/kode-login');
+        }
+
         $voteModel = new VoteModel();
 
         // Ambil ID user dari session
