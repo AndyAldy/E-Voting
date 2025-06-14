@@ -5,18 +5,18 @@ use App\Models\UserModel;
 
 class AuthController extends BaseController
 {
+    // Menampilkan halaman login terpadu di /manage
     public function loginPage()
     {
         return view('auth/management_login');
     }
 
+    // Memproses login dari form terpadu
     public function processLogin()
     {
         $userModel = new UserModel();
-        // PERBAIKAN: Gunakan service('request') untuk mengambil email
-        $user = $userModel->where('email', service('request')->getPost('email'))->first();
+        $user = $userModel->where('username', service('request')->getPost('username'))->first();
 
-        // PERBAIKAN: Gunakan service('request') untuk mengambil password
         if ($user && password_verify(service('request')->getPost('password'), $user['password'])) {
             session()->set([
                 'user_id'   => $user['id'],
@@ -24,15 +24,22 @@ class AuthController extends BaseController
                 'logged_in' => true,
             ]);
 
-            if ($user['role'] === 'admin') return redirect()->to('/admin');
-            if ($user['role'] === 'candidate') return redirect()->to('/candidate/dashboard');
+            // Cek peran (role) untuk menentukan redirect
+            if ($user['role'] === 'admin') {
+                return redirect()->to('/admin');
+            } elseif ($user['role'] === 'candidate') {
+                return redirect()->to('/candidate/dashboard');
+            }
         }
-        return redirect()->back()->with('error', 'Email atau password salah.');
+
+        // Jika login gagal atau peran tidak dikenali
+        return redirect()->back()->withInput()->with('error', 'username atau password salah.');
     }
 
+    // Logout dan kembali ke halaman utama
     public function logout()
     {
         session()->destroy();
-        return redirect()->to('/manage');
+        return redirect()->to('/');
     }
 }

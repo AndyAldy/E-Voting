@@ -7,12 +7,14 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class CandidateFilter implements FilterInterface
 {
-    public function before(RequestInterface $request, $arguments = null)
-    {
-        if (!session()->get('logged_in') || session()->get('role') !== 'candidate') {
-            return redirect()->to('/manage')->with('error', 'Akses ditolak. Silakan login sebagai kandidat.');
-        }
+// Di dalam CandidateFilter.php
+public function before(RequestInterface $request, $arguments = null)
+{
+    $session = session();
+    if (!$session->get('logged_in') || $session->get('role') !== 'candidate') {
+        return redirect()->to('/manage')->with('error', 'Anda harus login sebagai kandidat.');
     }
+}
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null) {}
 }
