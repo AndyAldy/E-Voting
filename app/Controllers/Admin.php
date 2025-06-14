@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Models\CandidateModel;
@@ -8,39 +9,49 @@ class Admin extends BaseController
 {
     public function index()
     {
-        $model = new CandidateModel();
-        $data['candidates'] = $model->findAll();
-        return view('admin/index', $data);
+        if ($res = $this->redirectIfNotAdmin()) return $res;
+        return view('admin/index');
     }
 
     public function addCandidate()
     {
+        if ($res = $this->redirectIfNotAdmin()) return $res;
         return view('admin/add_candidate');
     }
 
     public function saveCandidate()
     {
-        $model = new CandidateModel();
-        $model->save([
-            'name' => $this->request->getPost('name'),
-            'description' => $this->request->getPost('description')
+        if ($res = $this->redirectIfNotAdmin()) return $res;
+
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'name' => 'required|min_length[3]',
+            'visi_misi' => 'required'
         ]);
+
+        if (!$validation->withRequest($this->request)->run()) {
+            return redirect()->back()->withInput()->with('errors', $validation->getErrors());
+        }
+
+        $model = new CandidateModel();
+        $model->insert([
+            'name' => $this->request->getPost('name'),
+            'visi_misi' => $this->request->getPost('visi_misi')
+        ]);
+
         return redirect()->to('/admin');
     }
 
     public function results()
     {
-        $voteModel = new VoteModel();
-        $model = new CandidateModel();
-        $candidates = $model->findAll();
-        $results = [];
-        foreach ($candidates as $c) {
-            $count = $voteModel->where('candidate_id', $c['id'])->countAllResults();
-            $results[] = [
-                'name' => $c['name'],
-                'votes' => $count
-            ];
-        }
-        return view('admin/result', ['results' => $results]);
+        if ($res = $this->redirectIfNotAdmin()) return $res;
+
+        $model = new VoteModel();
+        $results = $model->select('candidates.name, COUNT(votes.id) as total')
+                         ->join('candidates', 'candidates.id = votes.kandidat_id')
+                         ->groupBy('votes.kandidat_id')
+                         ->findAll();
+
+        return view('admin/results', ['results' => $results]);
     }
 }

@@ -1,34 +1,37 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Models\CandidateModel;
 use App\Models\VoteModel;
-use CodeIgniter\Controller;
 
-class Vote extends Controller
+class Vote extends BaseController
 {
     public function index()
     {
-        $model = new CandidateModel();
-        $candidates = $model->findAll();
-        return view('vote/index', ['candidates' => $candidates]);
+        $kandidatModel = new CandidateModel();
+        $kandidats = $kandidatModel->findAll();
+        return view('vote/index', ['candidates' => $kandidats]);
     }
 
     public function submit()
     {
-        $voteModel = new VoteModel();
         $userId = session()->get('user_id');
+        $kandidatId = $this->request->getPost('candidate_id');
 
-        // Cek apakah user sudah voting
-        if ($voteModel->where('user_id', $userId)->first()) {
-            return redirect()->to('/dashboard')->with('error', 'Kamu sudah memilih');
+        $voteModel = new VoteModel();
+
+        // Cek apakah user sudah vote sebelumnya
+        $existing = $voteModel->where('user_id', $userId)->first();
+        if ($existing) {
+            return redirect()->back()->with('error', 'Anda sudah memilih.');
         }
 
-        $voteModel->save([
+        $voteModel->insert([
             'user_id' => $userId,
-            'candidate_id' => $this->request->getPost('candidate_id')
+            'kandidat_id' => $kandidatId
         ]);
 
-        return redirect()->to('/dashboard')->with('success', 'Berhasil memilih');
+        return redirect()->to('/dashboard')->with('success', 'Vote berhasil!');
     }
 }
