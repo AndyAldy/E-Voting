@@ -7,12 +7,12 @@ class UserModel extends Model
 {
     protected $table            = 'users';
     protected $primaryKey       = 'id';
-    protected $allowedFields    = ['username', 'password', 'role'];
     protected $useTimestamps    = true;
     protected $createdField     = 'created_at';
     protected $updatedField     = 'updated_at';
 
     protected $returnType       = 'array';
+    protected $allowedFields = ['email', 'password', 'role'];
 
     // Untuk hashing password otomatis (opsional)
     protected $beforeInsert     = ['hashPassword'];

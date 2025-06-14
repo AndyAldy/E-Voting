@@ -6,31 +6,47 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 
-// Default route ke form kode login
-$routes->get('/', 'Auth::kodeLogin');
+// ===================================================================
+// ==                  ALUR UNTUK PEMILIH (VOTER)                   ==
+// ===================================================================
+// Halaman utama website adalah tempat pemilih memasukkan kode unik.
+$routes->get('/', 'VoteController::index');
 
-// AUTH - Ganti dengan sistem kode unik
-$routes->get('kode-login', 'Auth::kodeLogin');
-$routes->post('kode-login', 'Auth::kodeLoginPost');
-$routes->get('logout', 'Auth::logout');
+// Rute ini untuk memproses form saat pemilih memasukkan kode uniknya.
+$routes->post('vote/process-code', 'VoteController::processCode');
 
-// DASHBOARD
-$routes->get('dashboard', 'Dashboard::index', ['filter' => 'auth']);
+// Rute ini untuk memproses form saat pemilih mengirimkan suaranya.
+$routes->post('vote/submit', 'VoteController::submitVote');
 
-// VOTING
-$routes->group('vote', ['filter' => 'auth'], function ($routes) {
-    $routes->get('/', 'Vote::index');
-    $routes->post('submit', 'Vote::submit');
+
+// ===================================================================
+// ==             ALUR UNTUK ADMIN & KANDIDAT (PRIVATE)             ==
+// ===================================================================
+// Halaman login khusus untuk Admin dan Kandidat, diakses melalui URL rahasia.
+$routes->get('manage', 'AuthController::loginPage');
+
+// Rute untuk memproses form login dari halaman /manage.
+$routes->post('manage/process', 'AuthController::processLogin');
+
+// Rute untuk logout Admin dan Kandidat.
+$routes->get('logout', 'AuthController::logout');
+
+
+// ===================================================================
+// ==                   RUTE YANG DILINDUNGI FILTER                 ==
+// ===================================================================
+
+// Grup rute ADMIN. Semua URL di sini hanya bisa diakses setelah login sebagai admin.
+$routes->group('admin', ['filter' => 'admin'], static function ($routes) {
+    $routes->get('/', 'AdminController::dashboard'); // Dashboard utama admin
+    $routes->get('results', 'AdminController::results'); // Halaman hasil detail pemilihan
+    $routes->get('candidates/add', 'AdminController::addCandidatePage'); // Halaman form tambah kandidat
+    $routes->post('candidates/save', 'AdminController::saveCandidate'); // Rute untuk menyimpan kandidat baru
+    $routes->get('codes/generate', 'AdminController::generateVoterCodes'); // Rute untuk membuat kode pemilih
 });
 
-// ADMIN
-$routes->group('admin', ['filter' => 'admin'], function ($routes) {
-    $routes->get('/', 'Admin::index');
-    $routes->get('candidates/add', 'Admin::addCandidate');
-    $routes->post('candidates/save', 'Admin::saveCandidate');
-    $routes->get('results', 'Admin::results');
-    $routes->get('gen-kode', 'Admin::generateKode'); // opsional: auto-generate kode user
+// Grup rute KANDIDAT. Semua URL di sini hanya bisa diakses setelah login sebagai kandidat.
+$routes->group('candidate', ['filter' => 'candidate'], static function ($routes) {
+    $routes->get('dashboard', 'CandidateController::dashboard'); // Dashboard utama kandidat
+    $routes->post('profile/update', 'CandidateController::updateProfile'); // Rute untuk memperbarui profil
 });
-
-// Tambahkan fallback jika 404
-$routes->set404Override();

@@ -7,7 +7,7 @@ class CandidateModel extends Model
 {
     protected $table            = 'candidates';
     protected $primaryKey       = 'id';
-    protected $allowedFields    = ['name', 'description'];
+    protected $allowedFields = ['user_id', 'full_name', 'vision', 'mission', 'photo'];
     protected $useTimestamps    = true;
     protected $createdField     = 'created_at';
     protected $updatedField     = 'updated_at';
