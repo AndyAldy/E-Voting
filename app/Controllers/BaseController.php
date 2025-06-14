@@ -9,56 +9,39 @@ use Psr\Log\LoggerInterface;
 
 class BaseController extends Controller
 {
+    /**
+     * Instance of the main Request object.
+     *
+     * @var RequestInterface
+     */
     protected $request;
-    protected $session;
 
     /**
-     * Helpers yang ingin dipanggil otomatis di seluruh controller
+     * An array of helpers to be loaded automatically upon
+     * class instantiation. These helpers will be available
+     * to all other controllers that extend BaseController.
+     *
+     * @var array
      */
     protected $helpers = ['url', 'form'];
 
+    /**
+     * Be sure to declare properties for any property fetch you initialized.
+     * The creation of dynamic property is deprecated in PHP 8.2.
+     */
+    protected $session;
+
+    /**
+     * Constructor.
+     */
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
-        // WAJIB dipanggil agar CI4 bekerja dengan benar
+        // Do Not Edit This Line
         parent::initController($request, $response, $logger);
 
-        // Mulai session
+        // Preload any models, libraries, etc, here.
+
+        // E.g.: $this->session = \Config\Services::session();
         $this->session = \Config\Services::session();
-    }
-
-    /**
-     * Cek apakah user sudah login, dipakai untuk controller umum
-     */
-    protected function isLoggedIn()
-    {
-        return $this->session->has('user_id');
-    }
-
-    /**
-     * Cek apakah user adalah admin
-     */
-    protected function isAdmin()
-    {
-        return $this->session->get('role') === 'admin';
-    }
-
-    /**
-     * Redirect ke login jika belum login
-     */
-    protected function redirectIfNotLoggedIn()
-    {
-        if (!$this->isLoggedIn()) {
-            return redirect()->to('/login');
-        }
-    }
-
-    /**
-     * Redirect ke dashboard jika bukan admin
-     */
-    protected function redirectIfNotAdmin()
-    {
-        if (!$this->isAdmin()) {
-            return redirect()->to('/dashboard');
-        }
     }
 }
