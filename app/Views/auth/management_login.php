@@ -24,7 +24,7 @@
                         <div class="form-group mb-3">
                             <label for="email" class="form-label">Email</label>
                             <!-- Input name harus 'email', bukan 'username' -->
-                            <input type="email" name="email" id="email" class="form-control" placeholder="Masukkan alamat email" required>
+                            <input type="username" name="username" id="email" class="form-control" placeholder="Masukkan username" required>
                         </div>
 
                         <div class="form-group mb-3">

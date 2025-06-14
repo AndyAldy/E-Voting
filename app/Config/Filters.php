@@ -54,9 +54,13 @@ class Filters extends BaseFilters
     /**
      * List of filter aliases that should run on any
      * before or after URI patterns.
-     *
-     * We don't use this method anymore. We apply filters
-     * directly in the Routes.php file.
      */
     public array $filters = [];
+
+    /**
+     * The $required property is deprecated but we declare it here
+     * as an empty array to prevent legacy framework defaults from loading.
+     * INI ADALAH PERBAIKAN FINAL.
+     */
+    public array $required = [];
 }
