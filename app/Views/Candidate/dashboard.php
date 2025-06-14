@@ -1,31 +1,61 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>E-Voting - Masukkan Kode</title>
-    </head>
-<body>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 text-center">
-                <h1>Selamat Datang di E-Voting</h1>
-                <p>Silakan masukkan kode unik Anda untuk memulai pemilihan.</p>
+<?= view('layout/header') ?>
 
-                <?php if (session()->getFlashdata('error')): ?>
-                    <div class="alert alert-danger">
-                        <?= session()->getFlashdata('error') ?>
-                    </div>
-                <?php endif; ?>
+<div class="container mt-4">
+    <h3>Dashboard Kandidat</h3>
+    <p>Selamat datang, <?= esc($candidate['full_name'] ?? 'Kandidat') ?>. Di halaman ini Anda dapat memperbarui profil Anda.</p>
 
-                <form action="/vote/process_code" method="post">
-                    <?= csrf_field() ?>
-                    <div class="form-group">
-                        <input type="text" name="unique_code" class="form-control form-control-lg" placeholder="Masukkan Kode Unik Anda" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-lg mt-3">Mulai Memilih</button>
-                </form>
-            </div>
+    <!-- Menampilkan pesan sukses jika ada -->
+    <?php if(session()->getFlashdata('success')): ?>
+        <div class="alert alert-success">
+            <?= session()->getFlashdata('success') ?>
+        </div>
+    <?php endif ?>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Update Profil</h5>
+            
+            <!-- Form harus memiliki enctype untuk upload file -->
+            <form action="<?= base_url('candidate/profile/update') ?>" method="post" enctype="multipart/form-data">
+                
+                <?= csrf_field() ?>
+
+                <div class="form-group mb-3">
+                    <label for="vision" class="form-label">Visi</label>
+                    <!-- Tampilkan data visi yang sudah ada -->
+                    <textarea name="vision" id="vision" class="form-control" rows="4" placeholder="Tuliskan visi Anda di sini"><?= esc($candidate['vision'] ?? '') ?></textarea>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="mission" class="form-label">Misi</label>
+                    <!-- Tampilkan data misi yang sudah ada -->
+                    <textarea name="mission" id="mission" class="form-control" rows="4" placeholder="Tuliskan misi Anda di sini"><?= esc($candidate['mission'] ?? '') ?></textarea>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="photo" class="form-label">Ganti Foto Profil</label>
+                    <input type="file" name="photo" id="photo" class="form-control">
+                    <small class="form-text text-muted">Kosongkan jika tidak ingin mengganti foto.</small>
+                    
+                    <!-- Tampilkan foto yang sekarang -->
+                    <?php if (!empty($candidate['photo']) && $candidate['photo'] !== 'default.png'): ?>
+                        <div class="mt-2">
+                            <p>Foto saat ini:</p>
+                            <img src="<?= base_url('uploads/photos/' . $candidate['photo']) ?>" alt="Foto Kandidat" style="width: 150px; height: auto;">
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Update Profil</button>
+            </form>
         </div>
     </div>
-</body>
-</html>
+
+    <div class="mt-4">
+        <a href="<?= base_url('logout') ?>" class="btn btn-danger">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+</div>
+
+<?= view('layout/footer') ?>

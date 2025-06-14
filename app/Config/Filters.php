@@ -1,26 +1,62 @@
 <?php
+
 namespace Config;
 
 use CodeIgniter\Config\Filters as BaseFilters;
+use CodeIgniter\Filters\Cors;
 use CodeIgniter\Filters\CSRF;
 use CodeIgniter\Filters\DebugToolbar;
 use CodeIgniter\Filters\Honeypot;
+use CodeIgniter\Filters\InvalidChars;
+use CodeIgniter\Filters\SecureHeaders;
 
 class Filters extends BaseFilters
 {
+    /**
+     * Configures aliases for Filter classes to
+     * make reading things nicer and simpler.
+     */
     public array $aliases = [
         'csrf'      => CSRF::class,
         'toolbar'   => DebugToolbar::class,
         'honeypot'  => Honeypot::class,
+        'cors'      => Cors::class,
+        'invalidchars'  => InvalidChars::class,
+        'secureheaders' => SecureHeaders::class,
+        // Daftarkan filter kustom Anda di sini
         'admin'     => \App\Filters\AdminFilter::class,
         'candidate' => \App\Filters\CandidateFilter::class,
     ];
 
+    /**
+     * List of filter aliases that are always
+     * applied before and after every request.
+     */
     public array $globals = [
-        'before' => ['csrf'], // Aktifkan CSRF untuk keamanan form
-        'after'  => ['toolbar'],
+        'before' => [
+            // 'honeypot',
+            'csrf', // Sebaiknya aktifkan CSRF untuk keamanan form
+            // 'invalidchars',
+        ],
+        'after' => [
+            'toolbar',
+            // 'honeypot',
+            // 'secureheaders',
+        ],
     ];
 
+    /**
+     * List of filter aliases that works on a
+     * particular HTTP method (GET, POST, etc.).
+     */
     public array $methods = [];
+
+    /**
+     * List of filter aliases that should run on any
+     * before or after URI patterns.
+     *
+     * We don't use this method anymore. We apply filters
+     * directly in the Routes.php file.
+     */
     public array $filters = [];
 }
