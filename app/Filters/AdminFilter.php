@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Filters;
 
 use CodeIgniter\Filters\FilterInterface;
@@ -10,15 +9,17 @@ class AdminFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        // Cek apakah session 'logged_in' tidak ada ATAU session 'role' bukan 'admin'
-        if (!session()->get('logged_in') || session()->get('role') !== 'admin') {
-            // Jika tidak memenuhi syarat, tendang kembali ke halaman login manage
-            return redirect()->to('/manage')->with('error', 'Anda harus login sebagai admin untuk mengakses halaman ini.');
+        // TAMBAHKAN BARIS INI UNTUK DEBUG
+        dd(session()->get());
+
+        // Kode di bawah ini sementara tidak akan berjalan
+        if (session()->get('role') !== 'admin') {
+            return redirect()->to('/manage')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        // Tidak perlu melakukan apa-apa setelah controller
+        // Do nothing
     }
 }
