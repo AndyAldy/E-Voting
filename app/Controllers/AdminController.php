@@ -2,103 +2,108 @@
 
 namespace App\Controllers;
 
-use App\Models\CandidateModel;
-use App\Models\UniqueCodeModel;
+use App\Models\KandidatModel;
+use App\Models\PemilihModel;
 use App\Models\UserModel;
 
 class AdminController extends BaseController
 {
-    /**
-     * Menampilkan dashboard utama admin.
-     */
     public function dashboard()
     {
-        return view('admin/index');
+        $kandidatModel = new KandidatModel();
+        $pemilihModel = new PemilihModel();
+
+        $data['total_kandidat'] = $kandidatModel->countAllResults();
+        $data['total_pemilih'] = $pemilihModel->countAllResults();
+        
+        return view('admin/index', $data);
     }
 
-    /**
-     * Menampilkan halaman untuk menambah kandidat baru.
-     */
     public function addCandidatePage()
     {
         return view('admin/add_candidates');
     }
 
-    /**
-     * Menyimpan data kandidat baru.
-     */
     public function saveCandidate()
     {
-        // 1. Validasi data form
         $rules = [
-            'full_name' => 'required|min_length[3]',
-            'email'     => 'required|valid_email|is_unique[users.email]',
-            'password'  => 'required|min_length[6]',
+            'name'     => 'required|min_length[3]',
+            'username' => 'required|is_unique[users.username]',
+            'password' => 'required|min_length[6]',
         ];
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        // 2. Buat akun login untuk kandidat di tabel `users`
         $userModel = new UserModel();
-        $userId = $userModel->insert([
-            // PERBAIKAN: Menggunakan service('request') untuk keandalan maksimal
-            'email'    => service('request')->getPost('email'),
-            'password' => service('request')->getPost('password'), // Biarkan UserModel yang melakukan hashing
-            'role'     => 'candidate',
-        ]);
+        
+        // PERUBAHAN DI SINI: Menggunakan service('request')
+        $userData = [
+            'name'     => service('request')->getPost('name'),
+            'username' => service('request')->getPost('username'),
+            'password' => service('request')->getPost('password'),
+            'role'     => 'kandidat',
+        ];
+        
+        $userId = $userModel->insert($userData);
 
-        // Jika user gagal dibuat, hentikan proses.
         if (!$userId) {
             return redirect()->back()->withInput()->with('error', 'Gagal membuat akun untuk kandidat.');
         }
 
-        // 3. Buat profil di tabel `candidates`
-        $candidateModel = new CandidateModel();
-        $candidateModel->insert([
-            'user_id'   => $userId,
-            // PERBAIKAN: Menggunakan service('request') di sini juga
-            'full_name' => service('request')->getPost('full_name'),
-            'vision'    => '',
-            'mission'   => '',
-            'photo'     => 'default.png',
+        $kandidatModel = new KandidatModel();
+        $kandidatModel->insert([
+            'user_id' => $userId,
+            'visi'    => '',
+            'misi'    => '',
+            'foto'    => 'default.png',
         ]);
 
-        return redirect()->to('/admin')->with('success', 'Kandidat baru berhasil ditambahkan.');
+        return redirect()->to('/admin/dashboard')->with('success', 'Kandidat baru berhasil ditambahkan.');
     }
 
-    /**
-     * Menampilkan hasil pemilihan detail (siapa memilih siapa).
-     */
     public function results()
     {
         $db = db_connect();
-        $builder = $db->table('votes');
-        $builder->select('unique_codes.code as voter_code, candidates.full_name as candidate_name, votes.voted_at');
-        $builder->join('candidates', 'candidates.id = votes.candidate_id');
-        $builder->join('unique_codes', 'unique_codes.id = votes.voter_code_id');
-        $data['votes'] = $builder->get()->getResultArray();
+        $builder = $db->table('vote');
+        $builder->select('pemilih.kode_unik as kode_pemilih, users.name as nama_kandidat, vote.created_at');
+        $builder->join('pemilih', 'pemilih.id = vote.pemilih_id');
+        $builder->join('kandidat', 'kandidat.id = vote.kandidat_id');
+        $builder->join('users', 'users.id = kandidat.user_id');
+        
+        $data['hasil_vote'] = $builder->get()->getResultArray();
 
         return view('admin/hasil', $data);
     }
 
-    /**
-     * Menghasilkan kode unik untuk para pemilih (voters).
-     */
     public function generateVoterCodes()
     {
         helper('text');
-        $codeModel = new UniqueCodeModel();
-        $jumlahKode = 10;
+        
+        $pemilihModel = new PemilihModel();
+        
+        // PERUBAHAN DI SINI: Menggunakan service('request')
+        $jumlahKode = (int) service('request')->getPost('jumlah');
+        
         $kodeTerbuat = 0;
+
+        if ($jumlahKode <= 0) {
+            return redirect()->to('/admin/dashboard')->with('error', 'Jumlah kode harus lebih dari 0.');
+        }
 
         for ($i = 0; $i < $jumlahKode; $i++) {
             $kode = random_string('alnum', 8);
-            $codeModel->insert(['code' => $kode, 'is_used' => 0]);
+
+            $dataPemilih = [
+                'nama'          => 'Pemilih-' . $kode,
+                'kode_unik'     => $kode,
+                'sudah_memilih' => 0,
+            ];
+            $pemilihModel->insert($dataPemilih);
             $kodeTerbuat++;
         }
 
-        return redirect()->to('/admin')->with('success', "$kodeTerbuat kode pemilih baru berhasil dibuat.");
+        return redirect()->to('/admin/dashboard')->with('success', "$kodeTerbuat kode pemilih baru berhasil dibuat.");
     }
 }

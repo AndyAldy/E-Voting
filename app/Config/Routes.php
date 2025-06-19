@@ -25,6 +25,6 @@ $routes->group('admin', ['filter' => 'admin'], static function ($routes) {
 
 // GRUP RUTE KANDIDAT (dilindungi filter)
 $routes->group('candidate', ['filter' => 'candidate'], static function ($routes) {
-    $routes->get('dashboard', 'CandidateController::dashboard');
-    $routes->post('profile/update', 'CandidateController::updateProfile');
+    $routes->get('dashboard', 'KandidatController::dashboard');
+    $routes->post('profile/update', 'KandidatController::updateProfile');
 });

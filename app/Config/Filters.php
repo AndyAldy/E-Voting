@@ -16,17 +16,15 @@ class Filters extends BaseFilters
      * Configures aliases for Filter classes to
      * make reading things nicer and simpler.
      */
-    public array $aliases = [
-        'csrf'      => CSRF::class,
-        'toolbar'   => DebugToolbar::class,
-        'honeypot'  => Honeypot::class,
-        'cors'      => Cors::class,
-        'invalidchars'  => InvalidChars::class,
-        'secureheaders' => SecureHeaders::class,
-        // Daftarkan filter kustom Anda di sini
-        'admin'     => \App\Filters\AdminFilter::class,
-        'candidate' => \App\Filters\CandidateFilter::class,
-    ];
+public array $aliases = [
+    'csrf'     => CSRF::class,
+    'toolbar'  => DebugToolbar::class,
+    'honeypot' => Honeypot::class,
+    'invalidchars' => InvalidChars::class,
+    'secureheaders' => SecureHeaders::class,
+    'admin'    => \App\Filters\AdminFilter::class,
+    'kandidat' => \App\Filters\KandidatFilter::class,
+];
 
     /**
      * List of filter aliases that are always
