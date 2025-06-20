@@ -6,17 +6,17 @@ use CodeIgniter\Model;
 
 class PemilihModel extends Model
 {
-    // PENYESUAIAN: Arahkan ke tabel 'pemilih'
     protected $table            = 'pemilih';
     protected $primaryKey       = 'id';
-    protected $useTimestamps    = true; // Aktif karena ada 'dibuat pada'
+    protected $useTimestamps    = true; // Benar, karena ada kolom timestamp
 
-    // PENYESUAIAN: Sesuaikan nama kolom timestamp
-    protected $createdField     = 'dibuat pada';
-    protected $updatedField     = null; // Tidak ada kolom update di tabel pemilih
+    // PERBAIKAN KRITIS: Gunakan nama kolom DENGAN UNDERSCORE
+    // agar cocok dengan database yang sudah diperbaiki.
+    protected $createdField     = 'dibuat_pada';
 
-    // PENYESUAIAN: Sesuaikan dengan kolom di tabel 'pemilih'
+    // Tidak ada kolom updated_at, jadi ini sudah benar.
+    protected $updatedField     = null;
+
     protected $allowedFields    = ['nama', 'kode_unik', 'sudah_memilih'];
-
     protected $returnType       = 'array';
 }

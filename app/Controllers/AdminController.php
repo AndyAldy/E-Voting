@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\KandidatModel;
 use App\Models\PemilihModel;
 use App\Models\UserModel;
+use App\Models\VoteModel;
 
 class AdminController extends BaseController
 {
@@ -16,7 +17,7 @@ class AdminController extends BaseController
         $data['total_kandidat'] = $kandidatModel->countAllResults();
         $data['total_pemilih'] = $pemilihModel->countAllResults();
         
-        return view('admin/index', $data);
+        return view('admin/dashboard', $data);
     }
 
     public function addCandidatePage()
@@ -38,11 +39,10 @@ class AdminController extends BaseController
 
         $userModel = new UserModel();
         
-        // PERUBAHAN DI SINI: Menggunakan service('request')
         $userData = [
-            'name'     => service('request')->getPost('name'),
-            'username' => service('request')->getPost('username'),
-            'password' => service('request')->getPost('password'),
+            'name'     => $this->request->getPost('name'),
+            'username' => $this->request->getPost('username'),
+            'password' => $this->request->getPost('password'),
             'role'     => 'kandidat',
         ];
         
@@ -53,10 +53,9 @@ class AdminController extends BaseController
         }
 
         $kandidatModel = new KandidatModel();
+        // Insert ini akan berhasil karena kolom visi/misi sekarang NULLable
         $kandidatModel->insert([
             'user_id' => $userId,
-            'visi'    => '',
-            'misi'    => '',
             'foto'    => 'default.png',
         ]);
 
@@ -65,32 +64,24 @@ class AdminController extends BaseController
 
     public function results()
     {
-        $db = db_connect();
-        $builder = $db->table('vote');
-        $builder->select('pemilih.kode_unik as kode_pemilih, users.name as nama_kandidat, vote.created_at');
-        $builder->join('pemilih', 'pemilih.id = vote.pemilih_id');
-        $builder->join('kandidat', 'kandidat.id = vote.kandidat_id');
-        $builder->join('users', 'users.id = kandidat.user_id');
+        $voteModel = new VoteModel();
         
-        $data['hasil_vote'] = $builder->get()->getResultArray();
+        // Query builder untuk mendapatkan detail vote
+        $data['votes'] = $voteModel
+            ->select('pemilih.kode_unik, users.name as nama_kandidat, vote.created_at as waktu_memilih')
+            ->join('pemilih', 'pemilih.id = vote.pemilih_id')
+            ->join('kandidat', 'kandidat.id = vote.kandidat_id')
+            ->join('users', 'users.id = kandidat.user_id')
+            ->findAll();
 
         return view('admin/hasil', $data);
     }
 
     public function generateVoterCodes()
     {
-        helper('text');
-        
         $pemilihModel = new PemilihModel();
-        
-        // PERUBAHAN DI SINI: Menggunakan service('request')
-        $jumlahKode = (int) service('request')->getPost('jumlah');
-        
-        $kodeTerbuat = 0;
-
-        if ($jumlahKode <= 0) {
-            return redirect()->to('/admin/dashboard')->with('error', 'Jumlah kode harus lebih dari 0.');
-        }
+        $jumlahKode = 10;
+        $generatedCodes = [];
 
         for ($i = 0; $i < $jumlahKode; $i++) {
             $kode = random_string('alnum', 8);
@@ -100,10 +91,16 @@ class AdminController extends BaseController
                 'kode_unik'     => $kode,
                 'sudah_memilih' => 0,
             ];
-            $pemilihModel->insert($dataPemilih);
-            $kodeTerbuat++;
+
+            if ($pemilihModel->insert($dataPemilih)) {
+                $generatedCodes[] = $kode;
+            }
         }
 
-        return redirect()->to('/admin/dashboard')->with('success', "$kodeTerbuat kode pemilih baru berhasil dibuat.");
+        $data['codes'] = $generatedCodes;
+        $data['total_dibuat'] = count($generatedCodes);
+
+        // Tampilkan halaman baru dengan daftar kode
+        return view('admin/generated_codes', $data);
     }
 }

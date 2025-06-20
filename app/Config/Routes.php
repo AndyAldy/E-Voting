@@ -4,27 +4,31 @@ use CodeIgniter\Router\RouteCollection;
 
 /** @var RouteCollection $routes */
 
-// ALUR UNTUK PEMILIH (VOTER) - Tidak berubah
+// Rute Publik (Pemilih & Halaman Awal)
 $routes->get('/', 'VoteController::index');
 $routes->post('vote/process-code', 'VoteController::processCode');
 $routes->post('vote/submit', 'VoteController::submitVote');
+$routes->get('vote/thank-you', 'VoteController::thankYouPage'); // Rute untuk halaman terima kasih
 
-// ALUR LOGIN TERPADU UNTUK ADMIN & KANDIDAT
-$routes->get('manage', 'AuthController::loginPage'); // Halaman login terpadu
+// Rute Manajemen (Login & Logout Umum)
+$routes->get('manage', 'AuthController::loginPage');
 $routes->post('manage/process', 'AuthController::processLogin');
 $routes->get('logout', 'AuthController::logout');
 
-// GRUP RUTE ADMIN (dilindungi filter)
+
+// --- GRUP ADMIN (Dilindungi oleh Filter 'admin') ---
 $routes->group('admin', ['filter' => 'admin'], static function ($routes) {
-    $routes->get('/', 'AdminController::dashboard');
+    $routes->get('/', 'AdminController::dashboard'); // Alias untuk dashboard
+    $routes->get('dashboard', 'AdminController::dashboard');
     $routes->get('results', 'AdminController::results');
     $routes->get('candidates/add', 'AdminController::addCandidatePage');
     $routes->post('candidates/save', 'AdminController::saveCandidate');
     $routes->get('codes/generate', 'AdminController::generateVoterCodes');
 });
 
-// GRUP RUTE KANDIDAT (dilindungi filter)
+// --- GRUP KANDIDAT (Dilindungi oleh Filter 'candidate') ---
 $routes->group('candidate', ['filter' => 'candidate'], static function ($routes) {
+    $routes->get('/', 'KandidatController::dashboard'); // Alias untuk dashboard
     $routes->get('dashboard', 'KandidatController::dashboard');
     $routes->post('profile/update', 'KandidatController::updateProfile');
 });
