@@ -1,4 +1,4 @@
-    <?= view('layout/header') ?>
+    <?= view('layout/header1') ?>
     <div class="container mt-4">
         <h3>Pilih Kandidat Pilihan Anda</h3>
         <p>Silakan pilih satu kandidat di bawah ini, lalu klik tombol "Kirim Suara".</p>

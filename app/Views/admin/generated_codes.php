@@ -27,7 +27,7 @@
     <?php endif; ?>
 
     <div class="mt-4">
-        <a href="<?= base_url('admin/dashboard') ?>" class="btn btn-primary">
+        <a href="<?= base_url('admin/admin_dashboard') ?>" class="btn btn-primary">
             <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
         </a>
     </div>

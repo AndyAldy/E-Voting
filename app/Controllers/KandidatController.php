@@ -22,7 +22,7 @@ class KandidatController extends BaseController
             return redirect()->to('/logout')->with('error', 'Data kandidat tidak ditemukan.');
         }
 
-        return view('candidate/dashboard', $data);
+        return view('candidate/candidate_dashboard', $data);
     }
 
     public function updateProfile()
@@ -57,6 +57,6 @@ class KandidatController extends BaseController
 
         $kandidatModel->update($dataKandidat['id'], $updateData);
 
-        return redirect()->to('/candidate/dashboard')->with('success', 'Profil berhasil diperbarui.');
+        return redirect()->to('/candidate/candidate_dashboard')->with('success', 'Profil berhasil diperbarui.');
     }
 }

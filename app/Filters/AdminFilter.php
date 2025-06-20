@@ -9,8 +9,6 @@ class AdminFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        // TAMBAHKAN BARIS INI UNTUK DEBUG
-        dd(session()->get());
 
         // Kode di bawah ini sementara tidak akan berjalan
         if (session()->get('role') !== 'admin') {

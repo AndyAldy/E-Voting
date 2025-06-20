@@ -93,4 +93,7 @@ class VoteController extends BaseController
     {
         return view('vote/thank_you_page');
     }
+    public function logout(){
+        return view('vote/enter_code_page');
+    }
 }

@@ -17,14 +17,13 @@ class AdminController extends BaseController
         $data['total_kandidat'] = $kandidatModel->countAllResults();
         $data['total_pemilih'] = $pemilihModel->countAllResults();
         
+        // PERBAIKAN: Menyesuaikan nama view dengan struktur file Anda.
         return view('admin/admin_dashboard', $data);
     }
-
     public function addCandidatePage()
     {
         return view('admin/add_candidates');
     }
-
     public function saveCandidate()
     {
         $rules = [
@@ -53,7 +52,6 @@ class AdminController extends BaseController
         }
 
         $kandidatModel = new KandidatModel();
-        // Insert ini akan berhasil karena kolom visi/misi sekarang NULLable
         $kandidatModel->insert([
             'user_id' => $userId,
             'foto'    => 'default.png',
@@ -61,12 +59,10 @@ class AdminController extends BaseController
 
         return redirect()->to('/admin/admin_dashboard')->with('success', 'Kandidat baru berhasil ditambahkan.');
     }
-
     public function results()
     {
         $voteModel = new VoteModel();
         
-        // Query builder untuk mendapatkan detail vote
         $data['votes'] = $voteModel
             ->select('pemilih.kode_unik, users.name as nama_kandidat, vote.created_at as waktu_memilih')
             ->join('pemilih', 'pemilih.id = vote.pemilih_id')
@@ -76,9 +72,9 @@ class AdminController extends BaseController
 
         return view('admin/hasil', $data);
     }
-
     public function generateVoterCodes()
     {
+        helper('text');
         $pemilihModel = new PemilihModel();
         $jumlahKode = 10;
         $generatedCodes = [];
@@ -100,7 +96,32 @@ class AdminController extends BaseController
         $data['codes'] = $generatedCodes;
         $data['total_dibuat'] = count($generatedCodes);
 
-        // Tampilkan halaman baru dengan daftar kode
         return view('admin/generated_codes', $data);
+    }
+    public function manageCandidates()
+    {
+        $userModel = new UserModel();
+        $data['candidates'] = $userModel->where('role', 'kandidat')->findAll();
+
+        return view('admin/manage_candidates', $data);
+    }
+
+    public function deleteCandidate($userId)
+    {
+        $userModel = new UserModel();
+        $kandidatModel = new KandidatModel();
+
+        $kandidat = $kandidatModel->where('user_id', $userId)->first();
+
+        if ($userModel->delete($userId)) {
+            if ($kandidat && $kandidat['foto'] !== 'default.png') {
+                $photoPath = FCPATH . 'uploads/photos/' . $kandidat['foto'];
+                if (file_exists($photoPath)) {
+                    unlink($photoPath);
+                }
+            }
+            return redirect()->to('admin/candidates')->with('success', 'Kandidat berhasil dihapus.');
+        }
+        return redirect()->to('admin/candidates')->with('error', 'Gagal menghapus. Kandidat ini kemungkinan sudah memiliki suara.');
     }
 }

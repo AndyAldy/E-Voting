@@ -28,7 +28,7 @@
     <div class="form-group mb-3">
         <label for="username" class="form-label">username</label>
         <input type="text" name="username" id="username" class="form-control"
-               placeholder="cth: kandidat1@email.com" value="<?= old('username') ?>" required>
+        value="<?= old('username') ?>" required>
     </div>
 
     <div class="form-group mb-3">

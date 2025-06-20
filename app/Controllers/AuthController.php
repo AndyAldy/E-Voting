@@ -29,7 +29,6 @@ class AuthController extends BaseController
             if ($user['role'] === 'admin') {
                 return redirect()->to('/admin/admin_dashboard');
             } elseif ($user['role'] === 'kandidat') {
-                // PERBAIKAN: Mengarahkan ke rute kandidat yang benar
                 return redirect()->to('/candidate/candidate_dashboard');
             }
         }
