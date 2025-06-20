@@ -17,7 +17,7 @@ class AdminController extends BaseController
         $data['total_kandidat'] = $kandidatModel->countAllResults();
         $data['total_pemilih'] = $pemilihModel->countAllResults();
         
-        return view('admin/dashboard', $data);
+        return view('admin/admin_dashboard', $data);
     }
 
     public function addCandidatePage()
@@ -59,7 +59,7 @@ class AdminController extends BaseController
             'foto'    => 'default.png',
         ]);
 
-        return redirect()->to('/admin/dashboard')->with('success', 'Kandidat baru berhasil ditambahkan.');
+        return redirect()->to('/admin/admin_dashboard')->with('success', 'Kandidat baru berhasil ditambahkan.');
     }
 
     public function results()

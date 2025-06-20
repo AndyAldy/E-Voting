@@ -1,8 +1,8 @@
 <?= view('layout/header') ?>
 <div class="container mt-4">
-    <h3>Hasil Detail Pemilihan (Siapa Memilih Siapa)</h3>
+    <h3>Hasil Detail Pemilihan</h3>
     <hr>
-    <?php if (!empty($votes) && is_array($votes)): ?>
+    <?php if (!empty($votes)): ?>
         <table class="table table-bordered table-striped">
             <thead class="thead-dark">
                 <tr>

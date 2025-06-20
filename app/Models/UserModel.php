@@ -1,6 +1,4 @@
-<?php
-
-namespace App\Models;
+<?php namespace App\Models;
 
 use CodeIgniter\Model;
 
@@ -8,13 +6,11 @@ class UserModel extends Model
 {
     protected $table            = 'users';
     protected $primaryKey       = 'id';
-    protected $useTimestamps    = true; // Aktifkan karena ada kolom 'dibuat_pada'
+    protected $useTimestamps    = true;
     protected $createdField     = 'dibuat_pada';
-    protected $updatedField     = null; // Tidak ada kolom update
-
+    protected $updatedField     = null;
     protected $returnType       = 'array';
     protected $allowedFields    = ['name', 'username', 'password', 'role'];
-
     protected $beforeInsert     = ['hashPassword'];
     protected $beforeUpdate     = ['hashPassword'];
 

@@ -18,8 +18,7 @@ $routes->get('logout', 'AuthController::logout');
 
 // --- GRUP ADMIN (Dilindungi oleh Filter 'admin') ---
 $routes->group('admin', ['filter' => 'admin'], static function ($routes) {
-    $routes->get('/', 'AdminController::dashboard'); // Alias untuk dashboard
-    $routes->get('dashboard', 'AdminController::dashboard');
+    $routes->get('/', 'AdminController::admin_dashboard');
     $routes->get('results', 'AdminController::results');
     $routes->get('candidates/add', 'AdminController::addCandidatePage');
     $routes->post('candidates/save', 'AdminController::saveCandidate');
@@ -28,7 +27,7 @@ $routes->group('admin', ['filter' => 'admin'], static function ($routes) {
 
 // --- GRUP KANDIDAT (Dilindungi oleh Filter 'candidate') ---
 $routes->group('candidate', ['filter' => 'candidate'], static function ($routes) {
-    $routes->get('/', 'KandidatController::dashboard'); // Alias untuk dashboard
-    $routes->get('dashboard', 'KandidatController::dashboard');
+    $routes->get('/', 'KandidatController::candidate_dashboard'); // Alias untuk dashboard
+    $routes->get('dashboard', 'KandidatController::candidate_dashboard');
     $routes->post('profile/update', 'KandidatController::updateProfile');
 });
