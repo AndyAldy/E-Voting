@@ -1,4 +1,4 @@
-<?= view('layout/header') ?>
+<?= view('layout/header1') ?>
 
 <div class="container mt-5">
     <div class="row justify-content-center">

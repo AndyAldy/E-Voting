@@ -23,6 +23,7 @@ $routes->group('admin', ['filter' => 'admin'], static function ($routes) {
     $routes->get('admin_dashboard', 'AdminController::dashboard');
     $routes->get('candidates', 'AdminController::manageCandidates');
     $routes->get('results', 'AdminController::results');
+    $routes->post('results/clear', 'AdminController::clearResults');
     $routes->get('candidates/add', 'AdminController::addCandidatePage');
     $routes->post('candidates/save', 'AdminController::saveCandidate');
     $routes->post('candidates/delete/(:num)', 'AdminController::deleteCandidate/$1');

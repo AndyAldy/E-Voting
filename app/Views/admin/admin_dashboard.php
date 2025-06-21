@@ -3,13 +3,6 @@
     <h3>Admin Dashboard</h3>
     <p>Selamat datang di panel kontrol E-Voting.</p>
 
-    <?php if(session()->getFlashdata('success')): ?>
-        <div class="alert alert-success"><?= session()->getFlashdata('success') ?></div>
-    <?php endif ?>
-    <?php if(session()->getFlashdata('error')): ?>
-        <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
-    <?php endif ?>
-
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Manajemen Sistem</h5>
@@ -21,10 +14,10 @@
             </div>
         </div>
     </div>
-    
+
     <div class="mt-4">
         <a href="<?= base_url('logout') ?>" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
 </div>
-<?= view('layout/footer') ?>
+    <?= view('layout/footer') ?>
 

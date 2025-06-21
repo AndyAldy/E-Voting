@@ -72,6 +72,25 @@ class AdminController extends BaseController
 
         return view('admin/hasil', $data);
     }
+        public function clearResults()
+    {
+        $voteModel = new VoteModel();
+        $pemilihModel = new PemilihModel();
+        $db = db_connect();
+        $db->transStart();
+
+        $voteModel->emptyTable();
+
+        $pemilihModel->builder()->update(['sudah_memilih' => 0]);
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            return redirect()->to('admin/results')->with('error', 'Gagal mereset data pemilihan.');
+        }
+
+        return redirect()->to('admin/results')->with('success', 'Semua data hasil pemilihan berhasil dihapus dan status pemilih telah direset.');
+    }
     public function generateVoterCodes()
     {
         helper('text');

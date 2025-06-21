@@ -3,13 +3,6 @@
     <h3>Manajemen Kandidat</h3>
     <p>Di halaman ini Anda dapat melihat dan menghapus data kandidat yang terdaftar.</p>
 
-    <?php if(session()->getFlashdata('success')): ?>
-        <div class="alert alert-success"><?= session()->getFlashdata('success') ?></div>
-    <?php endif ?>
-    <?php if(session()->getFlashdata('error')): ?>
-        <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
-    <?php endif ?>
-
     <div class="card shadow-sm">
         <div class="card-header">
             Daftar Seluruh Kandidat
@@ -51,6 +44,7 @@
             </div>
         </div>
     </div>
+
     <a href="<?= base_url('admin/admin_dashboard') ?>" class="btn btn-secondary mt-3"><i class="fas fa-arrow-left"></i> Kembali ke Dashboard</a>
 </div>
-<?= view('layout/footer') ?>
+    <?= view('layout/footer') ?>

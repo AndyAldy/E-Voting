@@ -4,17 +4,6 @@
     <h3>Tambah Kandidat Baru</h3>
     <p>Akun login akan dibuat secara otomatis untuk kandidat ini agar mereka bisa mengisi visi, misi, dan foto.</p>
 
-    <!-- Bagian untuk menampilkan pesan error validasi -->
-    <?php if(session()->getFlashdata('errors')): ?>
-        <div class="alert alert-danger">
-            <strong>Gagal menyimpan data:</strong>
-            <ul>
-            <?php foreach (session()->getFlashdata('errors') as $error) : ?>
-                <li><?= esc($error) ?></li>
-            <?php endforeach ?>
-            </ul>
-        </div>
-    <?php endif ?>
 
 <form method="post" action="<?= base_url('admin/candidates/save') ?>">
     <?= csrf_field() ?>
