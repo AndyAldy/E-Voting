@@ -23,9 +23,6 @@
     <li class="nav-item">
         <a class="nav-link"
     </li>
-    <li class="nav-item">
-    <a class="nav-link" href="<?= base_url('logout') ?>"><i class="fas fa-sign-out-alt"></i> Logout</a>
-    </li>
     <?php // Blok untuk Pemilih dan Pengunjung sekarang tidak menampilkan menu apa pun untuk tampilan yang lebih bersih. ?>
 </ul>
 </div>
