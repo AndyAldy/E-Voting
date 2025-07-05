@@ -34,5 +34,8 @@ class Filters extends BaseConfig
     ];
 
     public array $methods = [];
-    public array $filters = [];
+   public array $filters = [
+    'admin' => ['before' => ['admin', 'admin/*']],
+    'kandidat' => ['before' => ['candidate', 'candidate/*']],
+];
 }

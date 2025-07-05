@@ -10,7 +10,8 @@ class VoteController extends BaseController
 {
     public function index()
     {
-            if (session()->has('voter_user') && session()->get('voter_user.is_pemilih')) {
+        // Gunakan pengecekan sesi yang aman untuk pemilih
+        if (session()->has('voter_user') && session()->get('voter_user.is_pemilih')) {
             $kandidatModel = new KandidatModel();
             
             $data['candidates'] = $kandidatModel
@@ -27,7 +28,6 @@ class VoteController extends BaseController
     public function processCode()
     {
         $pemilihModel = new PemilihModel();
-        // PERBAIKAN: Sesuaikan dengan 'name' di view
         $kodeInput = $this->request->getPost('kode_unik');
 
         $dataPemilih = $pemilihModel
@@ -35,58 +35,63 @@ class VoteController extends BaseController
                         ->where('sudah_memilih', 0)
                         ->first();
 
-if ($dataPemilih) {
-    $voter_data = [
-        'pemilih_id'   => $dataPemilih['id'],
-        'nama_pemilih' => $dataPemilih['nama'],
-        'is_pemilih'   => true,
-    ];
-    session()->set('voter_user', $voter_data);
-    return redirect()->to('/');
-}
+        if ($dataPemilih) {
+            // Simpan sesi pemilih dalam grup 'voter_user' agar tidak tabrakan
+            $voter_data = [
+                'pemilih_id'   => $dataPemilih['id'],
+                'nama_pemilih' => $dataPemilih['nama'],
+                'is_pemilih'   => true,
+            ];
+            session()->set('voter_user', $voter_data);
+            
+            return redirect()->to('/');
+        }
 
         return redirect()->back()->with('error', 'Kode unik tidak valid atau sudah digunakan.');
     }
 
     public function submitVote()
     {
-if (!session()->has('voter_user') || !session()->get('voter_user.is_pemilih')) { // Cek grup 'voter_user'
-    return redirect()->to('/');
-}
-$pemilihId = session()->get('voter_user.pemilih_id');
+        // Gunakan pengecekan sesi yang aman
+        if (!session()->has('voter_user') || !session()->get('voter_user.is_pemilih')) {
+            return redirect()->to('/');
+        }
 
         $kandidatId = $this->request->getPost('kandidat_id');
-        // Validasi, pastikan pemilih memilih salah satu kandidat
         if (empty($kandidatId)) {
             return redirect()->back()->with('error', 'Anda harus memilih salah satu kandidat.');
         }
         
-        // PERBAIKAN: Gunakan VoteModel yang benar
         $voteModel = new VoteModel();
         $pemilihModel = new PemilihModel();
-        $pemilihId = session()->get('pemilih_id');
+        // Ambil ID pemilih dari sesi yang sudah dikelompokkan
+        $pemilihId = session()->get('voter_user.pemilih_id');
 
-        // Gunakan transaksi untuk memastikan kedua operasi berhasil
+        // Pastikan pemilihId tidak kosong sebelum melanjutkan
+        if (empty($pemilihId)) {
+            return redirect()->to('/')->with('error', 'Sesi Anda tidak valid. Silakan masukkan kode lagi.');
+        }
+
         $db = db_connect();
         $db->transStart();
 
-        // 1. Simpan suara ke tabel 'vote'
         $voteModel->insert([
             'pemilih_id'  => $pemilihId,
             'kandidat_id' => $kandidatId,
         ]);
 
-        // 2. Update status pemilih
+        // Sekarang $pemilihId pasti berisi ID yang benar
         $pemilihModel->update($pemilihId, ['sudah_memilih' => 1]);
         
         $db->transComplete();
 
         if ($db->transStatus() === false) {
-            // Jika transaksi gagal, kembalikan dengan error
             return redirect()->back()->with('error', 'Terjadi kesalahan teknis, silakan coba lagi.');
         }
 
+        // Hapus sesi pemilih saja, agar tidak mengganggu sesi admin jika ada
         session()->remove('voter_user');
+        
         return redirect()->to('vote/thank-you');
     }
 
@@ -94,7 +99,11 @@ $pemilihId = session()->get('voter_user.pemilih_id');
     {
         return view('vote/thank_you_page');
     }
-    public function logout(){
-        return view('vote/enter_code_page');
+    
+    public function logout()
+    {
+        // Hapus semua sesi yang mungkin ada dan kembali ke halaman utama
+        session()->destroy();
+        return redirect()->to('/');
     }
 }

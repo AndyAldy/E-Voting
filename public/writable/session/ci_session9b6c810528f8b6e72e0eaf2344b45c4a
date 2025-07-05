@@ -1,0 +1,1 @@
+__ci_last_regenerate|i:1751706238;csrf_test_name|s:32:"ff1880cf3f67f1bd48a4d4a713b3b3f5";_ci_previous_url|s:28:"http://localhost:8080/logout";management_user|a:3:{s:7:"user_id";s:1:"1";s:4:"role";s:5:"admin";s:9:"logged_in";b:1;}voter_user|a:3:{s:10:"pemilih_id";s:3:"241";s:12:"nama_pemilih";s:16:"Pemilih-CaaM3idN";s:10:"is_pemilih";b:1;}
