@@ -18,23 +18,21 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
 
-                <?php // Blok 1: Untuk Admin dan Kandidat yang sudah login ?>
-                <?php if (session()->get('logged_in')): ?>
-                    
-                    <?php if (session()->get('role') === 'admin'): ?>
-                        <li class="nav-item">
-                            <a class="nav-link" href="<?= base_url('admin/admin_dashboard') ?>">Admin Dashboard</a>
-                        </li>
-                    <?php elseif (session()->get('role') === 'kandidat'): ?>
-                        <li class="nav-item">
-                            <a class="nav-link" href="<?= base_url('candidate/candidate_dashboard') ?>">Profil Kandidat</a>
-                        </li>
-                    <?php endif; ?>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('logout') ?>"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                    </li>
-
+                <?php ?>
+<?php if (session()->has('management_user') && session()->get('management_user.logged_in')): ?>
+    <?php if (session()->get('management_user.role') === 'admin'): ?>
+        <li class="nav-item">
+            <a class="nav-link" href="<?= base_url('admin/admin_dashboard') ?>">Admin Dashboard</a>
+        </li>
+    <?php elseif (session()->get('management_user.role') === 'kandidat'): ?>
+        <li class="nav-item">
+            <a class="nav-link" href="<?= base_url('candidate/candidate_dashboard') ?>">Profil Kandidat</a>
+        </li>
+    <?php endif; ?>
+    
+    <li class="nav-item">
+        <a class="nav-link" href="<?= base_url('logout') ?>"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </li>
                 <?php endif; ?>
                 
 

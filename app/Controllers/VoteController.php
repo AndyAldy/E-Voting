@@ -10,7 +10,7 @@ class VoteController extends BaseController
 {
     public function index()
     {
-        if (session()->get('is_pemilih')) {
+            if (session()->has('voter_user') && session()->get('voter_user.is_pemilih')) {
             $kandidatModel = new KandidatModel();
             
             $data['candidates'] = $kandidatModel
@@ -35,23 +35,25 @@ class VoteController extends BaseController
                         ->where('sudah_memilih', 0)
                         ->first();
 
-        if ($dataPemilih) {
-            session()->set([
-                'pemilih_id'   => $dataPemilih['id'],
-                'nama_pemilih' => $dataPemilih['nama'],
-                'is_pemilih'   => true,
-            ]);
-            return redirect()->to('/');
-        }
+if ($dataPemilih) {
+    $voter_data = [
+        'pemilih_id'   => $dataPemilih['id'],
+        'nama_pemilih' => $dataPemilih['nama'],
+        'is_pemilih'   => true,
+    ];
+    session()->set('voter_user', $voter_data);
+    return redirect()->to('/');
+}
 
         return redirect()->back()->with('error', 'Kode unik tidak valid atau sudah digunakan.');
     }
 
     public function submitVote()
     {
-        if (!session()->get('is_pemilih')) {
-            return redirect()->to('/');
-        }
+if (!session()->has('voter_user') || !session()->get('voter_user.is_pemilih')) { // Cek grup 'voter_user'
+    return redirect()->to('/');
+}
+$pemilihId = session()->get('voter_user.pemilih_id');
 
         $kandidatId = $this->request->getPost('kandidat_id');
         // Validasi, pastikan pemilih memilih salah satu kandidat
@@ -84,8 +86,7 @@ class VoteController extends BaseController
             return redirect()->back()->with('error', 'Terjadi kesalahan teknis, silakan coba lagi.');
         }
 
-        session()->destroy();
-        
+        session()->remove('voter_user');
         return redirect()->to('vote/thank-you');
     }
 

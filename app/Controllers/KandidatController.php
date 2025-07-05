@@ -9,7 +9,7 @@ class KandidatController extends BaseController
     public function dashboard()
     {
         $kandidatModel = new KandidatModel();
-        $userId = session()->get('user_id');
+        $userId = session()->get('management_user.user_id');
 
         // PERBAIKAN: Melakukan JOIN untuk mengambil nama dari tabel 'users'
         $data['kandidat'] = $kandidatModel

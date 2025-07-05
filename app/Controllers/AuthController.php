@@ -20,11 +20,12 @@ class AuthController extends BaseController
         $user = $userModel->where('username', $username)->first();
 
         if ($user && password_verify($password, $user['password'])) {
-            session()->set([
+            $management_data = [
                 'user_id'   => $user['id'],
                 'role'      => $user['role'],
                 'logged_in' => true,
-            ]);
+            ];
+        session()->set('management_user', $management_data);
 
             if ($user['role'] === 'admin') {
                 return redirect()->to('/admin/admin_dashboard');
@@ -36,9 +37,9 @@ class AuthController extends BaseController
         return redirect()->back()->withInput()->with('error', 'Username atau password salah.');
     }
 
-    public function logout()
-    {
-        session()->destroy();
-        return redirect()->to('/manage')->with('success', 'Anda telah berhasil logout.');
-    }
+public function logout()
+{
+    session()->remove('management_user');
+    return redirect()->to('/manage')->with('success', 'Anda telah berhasil logout.');
+}
 }
